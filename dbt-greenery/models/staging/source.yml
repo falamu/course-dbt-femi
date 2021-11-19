@@ -1,0 +1,44 @@
+version: 2
+
+sources:
+
+  - name: staging
+    schema: public
+    database: dbt 
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false 
+    
+    tables:
+      - name: users
+        loaded_at_field: created_at
+        description: >
+          Contains information on greenery users
+      
+      - name: addresses
+        description: >
+          Contains address details for greenery users
+
+      - name: events
+        loaded_at_field: created_at
+        description: >
+          Contains event details for sessions on greenery
+
+      - name: orders
+        loaded_at_field: created_at
+        description: >
+          Contains details on orders made by greenery users
+
+      - name: order_items
+        description: >
+          Contains details on items included in orders
+
+      - name: products
+        description: >
+          Dimension table tracking products available for order
+
+      - name: promos
+        description: >
+          Contains details on discounts
