@@ -36,7 +36,7 @@ If I had more data:
 3. Why did you organize your marts models this way?
 For the core metrics, things like users, products and orders will be relevant across broad areas of the business. MArketing might be more interested in specific user behaviour or session level behaviour which could help target certain customers or better converting regions for advertising. The product team will be interested in the performance of each product, so having a product pageviews fact table, or a daily product performance table will be helpful for them.
 
-Le ~✨dag✨~
+Le ✨dag✨
 ![](/dbt-greenery/imgs/dbt-dag.png)
 
 ## Part Two 
