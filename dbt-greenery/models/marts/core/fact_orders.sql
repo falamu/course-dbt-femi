@@ -13,9 +13,11 @@ SELECT
   order_cost, 
   shipping_cost, 
   order_total, 
+  unique_items_in_order, 
+  total_items_in_order,
   tracking_id, 
   shipping_service, 
   estimated_delivery_at, 
   delivered_at, 
   status   
-FROM {{ source('source', 'orders') }}
+FROM {{ ref('int_order_quantity_details') }} 

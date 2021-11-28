@@ -4,9 +4,9 @@
   )
 }}
 
-SELECT 
-    id, 
+SELECT
+    id as order_item_id, 
     order_id, 
     product_id,
     quantity   
-FROM {{ source('staging', 'order_items') }}
+FROM {{ source('source', 'order_items') }}

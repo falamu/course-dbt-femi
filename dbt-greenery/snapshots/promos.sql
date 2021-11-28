@@ -5,11 +5,11 @@
       target_schema='snapshots',
       unique_key='promo_id',
       strategy='check',
-      check_cols=['active']
+      check_cols=['status']
     )
   }}
 
   SELECT * 
-  FROM {{ source('staging', 'promos') }}
+  FROM {{ source('source', 'promos') }}
 
 {% endsnapshot %}

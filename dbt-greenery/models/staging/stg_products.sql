@@ -5,9 +5,8 @@
 }}
 
 SELECT 
-    id, 
-    product_id, 
-    name,
-    price, 
-    quantity   
-FROM {{ source('staging', 'products') }}
+  product_id, 
+  name as product_name,
+  price, 
+  quantity   
+FROM {{ source('source', 'products') }}

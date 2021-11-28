@@ -1,0 +1,49 @@
+
+version: 2
+
+models:
+  - name: fact_sessions
+    description: Session-grained facts table
+    columns:
+      - name: session_id
+        tests:
+          - unique
+          - not_null
+      - name: session_started_at
+        tests:
+          - not_null
+      
+  - name: fact_user_orders
+    description: User-grained orders facts table. This helps to track the performance of a user over their lifetime using greenery
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: total_orders_placed
+        tests:
+          - positive_values
+
+  - name: int_session_details
+    description: Intermediate table for session level activities
+    columns:
+      - name: session_id
+        tests:
+          - unique
+          - not_null
+      - name: session_started_at
+        tests:
+          - not_null
+      - name: landing_page_url
+        tests:
+          - not_null
+
+  - name: int_valid_user_adress_country
+    description: Contains the current address of the user at a given point in time
+    columns:
+      - name: user_id
+        tests:
+          - not_null
+      - name: address_valid_from
+        tests:
+          - not_null

@@ -9,7 +9,7 @@ models:
         tests:
           - unique
           - not_null
-      - name: created_at
+      - name: became_user_at
         tests:
           - not_null
       
@@ -43,7 +43,7 @@ models:
   - name: stg_order_items
     description: Contains details on items included in orders
     columns:
-      - name: id
+      - name: order_item_id
         tests:
           - unique
           - not_null

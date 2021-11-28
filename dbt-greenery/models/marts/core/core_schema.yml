@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: dim_products
+    description: Dimension table tracking all greenery products
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: price
+        tests:
+          - not_null
+          - positive_values
+      
+  - name: dim_users
+    description: Dimension table for greenery users
+    columns:
+      - name: user_id
+        tests:
+          - unique
+          - not_null
+      - name: became_user_at
+        tests:
+          - not_null
+  
+  - name: fact_orders
+    description: Facts table for orders made by greenery users
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+      - name: total_items_in_order
+        tests:
+          - not_null
+
+  - name: int_order_quantity_details
+    description: Intermediate table addign the quantity of items made in each order to the rest of the order details
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+      - name: total_items_in_order
+        tests:
+          - not_null
