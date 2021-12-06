@@ -4,13 +4,8 @@
   )
 }}
 
-{% set aggregate_column = 'event_type' %}
 
-{% set event_types = dbt_utils.get_column_values(
-  table = ref('stg_events'), 
-  column = {{ aggregate_column }} 
-) 
-%}
+{%- set event_types = get_event_types() -%}
 
 WITH ordered_session_events AS (
   SELECT
@@ -39,8 +34,8 @@ first_session_event AS (
 aggregated_session_events AS (
   SELECT 
     session_id, 
-    {% for event_type in event_types %}
-      {{ aggregate_events( {{aggregate_column}}, {{event_type}} ) }}  as session_{{event_type}}_events,
+    {% for event in event_types %}
+    SUM(CASE WHEN event_type = '{{event}}' THEN 1 ELSE 0 END) as session_{{event}}_events,
     {% endfor %}
     COUNT(distinct event_type) as distinct_events
   FROM {{ ref('stg_events') }}
@@ -54,12 +49,10 @@ SELECT
   user_id, 
   landing_page_url, 
   first_event_type, 
-
-  {% for event_type in event_types %}
-    session_{{event_type}}_events, 
-    session_{{event_type}}_events >= 1 as session_has_{{event_type}},
+  {% for event in event_types %}
+    session_{{event}}_events, 
+    session_{{event}}_events >= 1 as session_has_{{event}},
   {% endfor %}
-
   distinct_events
 FROM first_session_event 
 JOIN aggregated_session_events USING (session_id)

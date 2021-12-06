@@ -1,0 +1,7 @@
+version: 2
+
+macros:
+  - name: get_event_types
+    description: Gets all the event types from the events table
+    docs:
+      show: true 

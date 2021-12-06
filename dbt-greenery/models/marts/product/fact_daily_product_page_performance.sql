@@ -4,6 +4,8 @@
   )
 }}
 
+{%- set event_types = get_event_types() -%}
+
 WITH days AS (
   {{ dbt_utils.date_spine(
     datepart="day",
@@ -25,9 +27,11 @@ daily_product_event_stats AS (
   SELECT
     date_trunc('day', created_at) as event_date, 
     product_id, 
-    SUM(CASE WHEN event_type='page_view' THEN 1 END) as daily_page_views, 
-    SUM(CASE WHEN event_type='add_to_cart' THEN 1 END) as daily_cart_additions, 
-    SUM(CASE WHEN event_type='delete_from_cart' THEN 1 END) as daily_cart_deletions
+    {% for event in event_types %}
+    SUM(CASE WHEN event_type = '{{event}}' THEN 1 END) as daily_{{event}},
+    COUNT(distinct session_id) FILTER(WHERE event_type = '{{event}}') as daily_sessions_with_{{event}},
+    {% endfor %}
+    COUNT(distinct session_id) as daily_sessions
   FROM {{ ref('int_event_type_details') }}
   WHERE created_at IS NOT NULL
   GROUP BY 1,2
@@ -47,11 +51,15 @@ daily_orders AS (
 SELECT 
   event_date,
   product_id, 
-  daily_page_views, 
-  daily_cart_additions, 
-  daily_cart_deletions, 
+  daily_page_view, 
+  daily_add_to_cart, 
+  daily_delete_from_cart, 
+  daily_sessions_with_page_view, 
+  daily_sessions_with_add_to_cart, 
+  daily_sessions_with_delete_from_cart, 
   daily_orders_containing_product, 
-  daily_total_quantity_ordered
+  daily_total_quantity_ordered, 
+  daily_sessions
 FROM product_days
 LEFT JOIN daily_product_event_stats USING (event_date, product_id)
 LEFT JOIN daily_orders USING (event_date, product_id)
