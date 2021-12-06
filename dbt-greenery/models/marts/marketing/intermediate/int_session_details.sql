@@ -4,6 +4,13 @@
   )
 }}
 
+{% set aggregate_column = 'event_type' %}
+
+{% set event_types = dbt_utils.get_column_values(
+  table = ref('stg_events'), 
+  column = {{ aggregate_column }} 
+) 
+%}
 
 WITH ordered_session_events AS (
   SELECT
@@ -32,10 +39,10 @@ first_session_event AS (
 aggregated_session_events AS (
   SELECT 
     session_id, 
-    SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) as page_views,
-    SUM(CASE WHEN event_type = 'add_to_cart' THEN 1 ELSE 0 END) as cart_additions,
-    SUM(CASE WHEN event_type = 'checkout' THEN 1 ELSE 0 END) as checkouts,
-    SUM(CASE WHEN event_type = 'account_created' THEN 1 ELSE 0 END) as signups
+    {% for event_type in event_types %}
+      {{ aggregate_events( {{aggregate_column}}, {{event_type}} ) }}  as session_{{event_type}}_events,
+    {% endfor %}
+    COUNT(distinct event_type) as distinct_events
   FROM {{ ref('stg_events') }}
   GROUP BY 1
 )
@@ -47,10 +54,12 @@ SELECT
   user_id, 
   landing_page_url, 
   first_event_type, 
-  page_views as session_page_views, 
-  signups >= 1 as session_has_signup, 
-  cart_additions >= 1 as session_has_cart_additions, 
-  checkouts >= 1 as session_has_checkout, 
-  checkouts
+
+  {% for event_type in event_types %}
+    session_{{event_type}}_events, 
+    session_{{event_type}}_events >= 1 as session_has_{{event_type}},
+  {% endfor %}
+
+  distinct_events
 FROM first_session_event 
 JOIN aggregated_session_events USING (session_id)
