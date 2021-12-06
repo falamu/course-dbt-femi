@@ -13,11 +13,12 @@ SELECT
   user_id, 
   landing_page_url, 
   first_event_type, 
-  session_page_views, 
-  session_has_signup, 
-  session_has_cart_additions,
+  session_page_view_events,
+  session_has_page_view, 
+  session_has_account_created, 
+  session_has_add_to_cart,
   session_has_checkout, 
-  checkouts
+  session_checkout_events
 FROM {{ ref('int_session_details') }}
 LEFT JOIN {{ ref('int_valid_user_address_country') }} USING (user_id)
 WHERE session_started_at BETWEEN address_valid_from AND COALESCE(address_valid_to, now() at time zone 'utc')
